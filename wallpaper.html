@@ -880,6 +880,30 @@ body.twilight-mode #day-night-toggle .twilight-icon { display:block; }
 .pp-gear button small { font-size: 11.5px; color: #7d9070; }
 .pp-gear button:disabled { opacity: .62; }
 .pp-gear button:disabled:hover { border-color: #c8ceb3; }
+.pp-decor-balance { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 7px; }
+.pp-decor-balance .pp-stat { margin: 0; }
+.pp-decor-balance .pp-actions { margin: 0; }
+.pp-decor-balance .btn-ghost { padding: 4px 8px; white-space: nowrap; font-size: 12px; }
+.pp-decor-styles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin: 0 0 9px; }
+.pp-decor-styles button {
+  display: grid; gap: 4px; padding: 3px 3px 5px; overflow: hidden;
+  border: 1px solid #c8ceb3; border-radius: 9px; background: #fffbef; color: #425b48;
+  font: 12px var(--ui-cn-font); text-align: center;
+}
+.pp-decor-styles button:hover { border-color: #8aa06f; }
+.pp-decor-styles button[aria-pressed="true"] { border-color: #587c5e; background: #e7edda; box-shadow: inset 0 0 0 1px #587c5e; font-weight: 700; }
+.pp-decor-styles canvas { display: block; width: 100%; height: auto; border-radius: 6px; }
+.pp-decor-props button { padding: 6px 10px; }
+.pp-decor-props button b { justify-content: space-between; }
+.pp-decor-props button b span { color: #6b7f63; font-size: 11.5px; font-weight: 400; }
+.pp-actions.pp-decor-actions { margin: 0 0 8px; }
+.pp-decor-actions .btn-ghost[aria-pressed="true"], .pp-actions .btn-ghost.pp-decor-confirm {
+  background: #f8e6d6; border-color: #be8e73; color: #784b37;
+}
+.pp-decor-hint { margin: 0 0 8px; font-size: 12px; color: #637758; }
+.play-panel.is-decor-deleting .pp-decor-styles,
+.play-panel.is-decor-deleting .pp-decor-props { display: none; }
+body:has(.play-panel.is-decor-deleting) #pond { cursor: crosshair; }
 .pp-book { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .pp-book .bk {
   position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -1022,15 +1046,14 @@ button.pp-hut-chip:hover { border-color: #8aa06f; }
 .pp-hut-mini { padding: 5px 8px; border: 1px solid #d4d8bd; border-radius: 10px; background: #fffbef; min-width: 0; }
 .pp-hut-mini b { display: block; font-size: 12.5px; color: #4f6b52; }
 .pp-hut-mini span { font-size: 11px; color: #8b9a7d; }
-/* 潭心小筑面板的移动箭头：偏移叠加在原来「右侧居中」之上 */
-#gp-panel.hut-movable { transform: translate(var(--hut-dx, 0px), calc(-50% + var(--hut-dy, 0px))); }
-#gp-panel.hut-movable.closing { transform: translate(calc(var(--hut-dx, 0px) + 14px), calc(-50% + var(--hut-dy, 0px))); }
-.hut-mover { display: inline-flex; align-items: center; gap: 1px; margin-right: 2px; opacity: .4; transition: opacity .2s; }
-.hut-mover:hover, .hut-mover:focus-within { opacity: .95; }
-.hut-mover button { width: 22px; height: 22px; padding: 0; display: grid; place-items: center; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #527763; cursor: pointer; }
-.hut-mover button svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-.hut-mover button:hover { background: #66826718; border-color: #c1c6a0; }
-.hut-mover button[data-off="1"] { opacity: .3; cursor: default; }
+/* 面板平移叠加在原有的垂直居中和开关动画之上。 */
+.play-panel.panel-movable { translate: var(--panel-dx, 0px) var(--panel-dy, 0px); }
+.panel-mover { display: inline-flex; align-items: center; gap: 1px; margin-right: 2px; opacity: .7; transition: opacity .2s; }
+.panel-mover:hover, .panel-mover:focus-within { opacity: .95; }
+.panel-mover button { width: 22px; height: 22px; padding: 0; display: grid; place-items: center; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #527763; cursor: pointer; }
+.panel-mover button svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.panel-mover button:hover { background: #66826718; border-color: #c1c6a0; }
+.panel-mover button[aria-disabled="true"] { opacity: .3; cursor: default; }
 .pp-res {
   display: flex; gap: 9px; padding: 9px 10px; margin-bottom: 7px;
   border: 1px solid #c8ceb3; border-radius: 14px 12px 15px 11px; background: #fffbef;
@@ -1193,6 +1216,10 @@ html[data-clean-screen="true"] .clean-exit:hover { opacity: 1; background: #193e
 @media (max-width: 900px) {
   .poem-card { max-width: 220px; }
   .play-panel { width: min(292px, calc(100vw - 48px)); }
+}
+@media (max-width: 640px) {
+  .corner-se { bottom: 146px; }
+  .play-menu { max-height: calc(100dvh - 200px); overflow-y: auto; }
 }
 
 /* ---- 鱼谱面板防穿模：限高 + 紧凑格子 ---- */
@@ -9702,11 +9729,16 @@ const GP_RECHARGE = [
 ];
 /* —— 池塘装修：铜钱的消费出口，岸边 / 水面可各摆若干 —— */
 const GP_PROPS = [
-  { k: 'lilypad', n: '睡莲', d: '浮在水面的圆叶，锦鲤爱在下面乘凉', cost: 3, place: 'water' },
-  { k: 'grass', n: '水草', d: '岸边一丛青草，风来会摇', cost: 4, place: 'water' },
-  { k: 'rock', n: '假山', d: '青石叠成的岸景，稳稳压住水色', cost: 6, place: 'shore' },
-  { k: 'stonelamp', n: '石灯笼', d: '入夜自己会亮起一点暖光', cost: 8, place: 'shore' },
-  { k: 'bridge', n: '栈桥', d: '探进水中的木桥，像有人正要走过来', cost: 10, place: 'shore' },
+  { k: 'lilypad', n: '睡莲', cost: 3, place: 'water' },
+  { k: 'grass', n: '水草', cost: 4, place: 'water' },
+  { k: 'rock', n: '假山', cost: 6, place: 'shore' },
+  { k: 'stonelamp', n: '石灯笼', cost: 8, place: 'shore' },
+  { k: 'bridge', n: '栈桥', cost: 10, place: 'shore' },
+];
+const GP_DECOR_STYLES = [
+  { id: 'stone', n: '青石荷汀', props: ['白睡莲', '蒲草', '苔石', '青石灯', '错落踏石'] },
+  { id: 'bamboo', n: '烟雨竹径', props: ['碧莲', '青竹', '层岩', '叠檐石灯', '斜铺竹桥'] },
+  { id: 'vermilion', n: '朱栏晚照', props: ['红莲', '秋荻', '暖岩', '六角灯', '朱栏拱桥'] },
 ];
 /* —— 彩蛋鱼：达成隐藏条件才现身 —— */
 const GP_EGGS = [
@@ -9931,7 +9963,7 @@ const DEFAULT_SAVE = () => ({
   streak: { last: '', n: 0 },
   countGame: { best: 0, day: '' }, hideGame: { best: 0, day: '' }, nightFish: 0, rainFish: 0,
   /* 第二轮新增：装修 / 繁育 / 竞速 / 彩蛋 / 称号 / 存档槽 */
-  props: [], propsOwned: {}, coinSpent: 0,
+  props: [], propsOwned: {}, decorStyle: GP_DECOR_STYLES[0].id, coinSpent: 0,
   leadId: '', breed: 0, pedigree: {}, raceBest: 0, raceWins: 0,
   eggs: {}, tips: {}, titleId: '', slot: 'work', lanternMax: 0,
   eventFish: 0, seasonSeen: {}, checkin: 0, festival: '',
@@ -9976,6 +10008,7 @@ function ensureShape() {
   if (typeof s.autoIdleMin !== 'number') s.autoIdleMin = 10;
   s.props = Array.isArray(s.props) ? s.props : [];
   s.propsOwned = s.propsOwned && typeof s.propsOwned === 'object' ? s.propsOwned : {};
+  if (!GP_DECOR_STYLES.some(style => style.id === s.decorStyle)) s.decorStyle = GP_DECOR_STYLES[0].id;
   s.pedigree = s.pedigree && typeof s.pedigree === 'object' ? s.pedigree : {};
   s.eggs = s.eggs && typeof s.eggs === 'object' ? s.eggs : {};
   s.tips = s.tips && typeof s.tips === 'object' ? s.tips : {};
@@ -11191,7 +11224,8 @@ function togglePanel(game) {
   if (game === 'ang') { closePanel(); BoatFishing.open('gear'); return; }
   BoatFishing.interrupt();
   const p = $('gp-panel');
-  if (panelGame === game && !p.hidden) { closePanel(); return; }
+  if ((panelGame === game || (panelGame === 'recharge' && rechargeFrom === game)) && !p.hidden) { closePanel(); return; }
+  if (panelGame === 'decor') decorDeleting = false;
   if (SHOOT.on && game !== 'shoot') shootEnd();     // 切到别的玩法就收起墨珠
   panelGame = game; $('gp-codex').hidden = true; document.querySelector('#fish-ranking').close();
   if (game === 'ach') achPage = 0;                  // 每次打开成就从头翻
@@ -11210,23 +11244,26 @@ function positionPanelBesideMenu(p) {
   const z = parseFloat(getComputedStyle(p).zoom)
     || parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--ui-zoom')) || 1;
   const r = menu.getBoundingClientRect();
-  p.style.right = ((window.innerWidth - r.left + 8) / z) + 'px';
+  const beside = (window.innerWidth - r.left + 8) / z;
+  p.style.right = panelGame === 'decor' && r.left < p.getBoundingClientRect().width + 16 ? '' : beside + 'px';
 }
 function closePanel() {
   if (panelGame === 'shoot' || panelGame === 'recharge') shootEnd();
+  decorDeleting = false;
+  $('gp-panel').classList.remove('is-decor-deleting');
   $('gp-panel').hidden = true; $('gp-panel').style.right = ''; panelGame = null; updatePlayMenuStates();
 }
 function updatePlayMenuStates() {
   $('gp-open-ang')?.setAttribute('aria-pressed', String(panelGame === 'ang'));
   $('gp-open-spot')?.setAttribute('aria-pressed', String(panelGame === 'spot'));
   $('gp-open-net')?.setAttribute('aria-pressed', String(panelGame === 'net'));
-  $('gp-open-shoot')?.setAttribute('aria-pressed', String(panelGame === 'shoot' || panelGame === 'recharge'));
+  $('gp-open-shoot')?.setAttribute('aria-pressed', String(panelGame === 'shoot' || (panelGame === 'recharge' && rechargeFrom === 'shoot')));
   $('gp-open-hut')?.setAttribute('aria-pressed', String(panelGame === 'hut'));
   $('gp-open-stats')?.setAttribute('aria-pressed', String(panelGame === 'stats'));
   $('gp-open-ach')?.setAttribute('aria-pressed', String(panelGame === 'ach'));
   $('gp-open-count')?.setAttribute('aria-pressed', String(panelGame === 'count'));
   $('gp-open-hide')?.setAttribute('aria-pressed', String(panelGame === 'hide'));
-  $('gp-open-decor')?.setAttribute('aria-pressed', String(panelGame === 'decor'));
+  $('gp-open-decor')?.setAttribute('aria-pressed', String(panelGame === 'decor' || (panelGame === 'recharge' && rechargeFrom === 'decor')));
   $('gp-open-race')?.setAttribute('aria-pressed', String(panelGame === 'race'));
   $('gp-open-breed')?.setAttribute('aria-pressed', String(panelGame === 'breed'));
   $('gp-open-koi')?.setAttribute('aria-pressed', String(panelGame === 'koi'));
@@ -11252,23 +11289,60 @@ function renderPanel() {
   else if (panelGame === 'breed') renderBreedPanel(p);
   else if (panelGame === 'koi') renderKoiPanel(p);
   else if (panelGame === 'wishwall') renderWishWall(p);
-  p.classList.toggle('hut-movable', panelGame === 'hut');   // 只有潭心小筑面板能挪，别的面板保持原位
-  if (panelGame === 'hut') hutMoverApply(p);
+  p.classList.toggle('is-decor-deleting', panelGame === 'decor' && decorDeleting);
   syncPanelMin();                       // 每次重画都校正一次，避免细条状态串到别的面板上
+  const mover = PLAY_PANEL_MOVERS[panelGame];
+  p.classList.toggle('panel-movable', !!mover);
+  if (mover) {
+    panelMoverMount(p, mover);
+    panelMoverSet(p, mover);
+    // 首次打开时，面板的默认锚点会在 renderPanel 之后设定。
+    requestAnimationFrame(() => {
+      if (PLAY_PANEL_MOVERS[panelGame] === mover) panelMoverFit(p, mover);
+    });
+  }
 }
 /* 池塘装修：解锁 / 摆放 */
 function renderDecorPanel(p) {
   const owned = k => !!S.propsOwned[k];
-  let body = `<div class="pp-stat">铜钱 ${S.coins} 枚 · 已摆 ${(S.props || []).length} 件。解锁后点水面即可摆放。</div>
-    <div class="pp-gear">${GP_PROPS.map(pr => `<button type="button" data-prop="${pr.k}" aria-pressed="${owned(pr.k)}">
-      <b>${pr.n}${owned(pr.k) ? '' : ` · ${pr.cost} 枚`}</b><small>${pr.d}${owned(pr.k) ? ` · 已摆 ${(S.props || []).filter(x => x.k === pr.k).length} 件` : ''}</small></button>`).join('')}</div>`;
-  body += `<div class="pp-row"><em>${placing ? `正要摆放：${propBy(placing).n} —— 点一片水面` : '点已解锁的一项，再点水面放下'}</em></div>
-    <div class="pp-actions"><button class="btn-ghost" data-act="clear" type="button">收起摆设</button></div>
-    <p class="pp-hint">摆设只改观感，不动任何进度；换主题时它们也留在原地。</p>`;
+  const style = GP_DECOR_STYLES.find(entry => entry.id === S.decorStyle);
+  const body = `<div class="pp-decor-balance">
+      <p class="pp-stat">铜钱 ${S.coins} 枚 · 已摆 ${S.props.length} 件</p>
+      <div class="pp-actions"><button class="btn-ghost" data-act="recharge" type="button">补充铜钱</button></div>
+    </div>
+    <div class="pp-decor-styles" role="group" aria-label="摆设风格">${GP_DECOR_STYLES.map(entry => `
+      <button type="button" data-decor-style="${entry.id}" aria-pressed="${entry.id === style.id}">
+        <canvas width="176" height="102" aria-hidden="true"></canvas><span>${entry.n}</span>
+      </button>`).join('')}</div>
+    <div class="pp-actions pp-decor-actions">
+      <button class="btn-ghost" type="button" data-act="delete" aria-pressed="${decorDeleting}"${S.props.length ? '' : ' disabled'}>${decorDeleting ? '退出删除' : '删除摆设'}</button>
+      ${decorDeleting ? '<button class="btn-ghost" type="button" data-act="clear">收起全部</button>' : ''}
+    </div>
+    <p class="pp-decor-hint">${decorDeleting ? '在池面点一下摆设即可删除，可按 Esc 退出。' : '点选摆设，再点水面放置。风格可免费切换。'}</p>
+    <div class="pp-gear pp-decor-props">${GP_PROPS.map((pr, i) => `<button type="button" data-prop="${pr.k}">
+      <b>${pr.n}<span>${owned(pr.k) ? `已摆 ${S.props.filter(item => item.k === pr.k).length} 件` : `${pr.cost} 枚解锁`}</span></b>
+      <small>${style.props[i]}</small></button>`).join('')}</div>`;
   p.innerHTML = panelHead('池塘装修') + '<div class="pp-body">' + body + '</div>';
   bindPanelCommon(p);
+  p.querySelectorAll('[data-decor-style]').forEach(button => {
+    const id = button.dataset.decorStyle;
+    drawDecorThumbnail(button.querySelector('canvas'), id);
+    button.addEventListener('click', () => {
+      if (S.decorStyle === id) return;
+      S.decorStyle = id; save(); renderPanel();
+      p.querySelector(`[data-decor-style="${id}"]`).focus({ preventScroll: true });
+    });
+  });
   p.querySelectorAll('[data-prop]').forEach(b => b.addEventListener('click', () => { buyProp(b.dataset.prop); }));
-  p.querySelector('[data-act="clear"]')?.addEventListener('click', clearProps);
+  p.querySelector('[data-act="recharge"]').addEventListener('click', () => openRecharge('decor'));
+  p.querySelector('[data-act="delete"]').addEventListener('click', () => setDecorDeleting(!decorDeleting));
+  p.querySelector('[data-act="clear"]')?.addEventListener('click', e => {
+    const button = e.currentTarget;
+    if (button.dataset.confirm) { clearProps(); return; }
+    button.dataset.confirm = 'true';
+    button.classList.add('pp-decor-confirm');
+    button.textContent = '确认收起全部';
+  });
 }
 /* 喂食竞速赛 */
 function renderRacePanel(p) {
@@ -12268,7 +12342,14 @@ function renderShootPanel(p) {
   setupPanelMin(p);
   p.querySelector('[data-act="start"]')?.addEventListener('click', () => { shootStart(); renderPanel(); });
   p.querySelector('[data-act="end"]')?.addEventListener('click', () => { shootEnd(); renderPanel(); });
-  p.querySelector('[data-act="recharge"]')?.addEventListener('click', () => { panelGame = 'recharge'; panelMin = false; renderPanel(); });
+  p.querySelector('[data-act="recharge"]')?.addEventListener('click', () => openRecharge('shoot'));
+}
+let rechargeFrom = 'shoot';
+function openRecharge(from) {
+  rechargeFrom = from;
+  decorDeleting = false;
+  panelGame = 'recharge'; panelMin = false;
+  renderPanel(); updatePlayMenuStates();
 }
 /* 演示充值：点档位即刻到账，纯玩法，不产生任何真实扣费 */
 function renderRechargePanel(p) {
@@ -12279,7 +12360,7 @@ function renderRechargePanel(p) {
       <div class="rz"><b>${S.coins}</b><span class="kg">当前铜钱</span></div>
       <div class="rz"><b>${S.recharge || 0}</b><span class="kg">演示累计到账</span></div>
     </div>
-    <div class="pp-actions"><button class="btn-ghost" data-act="back" type="button">返回捕鱼</button></div>
+    <div class="pp-actions"><button class="btn-ghost" data-act="back" type="button">${rechargeFrom === 'decor' ? '返回装修' : '返回捕鱼'}</button></div>
     <p class="pp-hint">铜钱只存在这台电脑的存档里，用来换鱼食、摆设和墨珠，没有任何真实价值。</p>`;
   p.innerHTML = panelHead('补充铜钱') + '<div class="pp-body">' + body + '</div>';
   bindPanelCommon(p);
@@ -12292,7 +12373,10 @@ function renderRechargePanel(p) {
     toast('已到账 ' + n + ' 铜钱', '演示充值，仅为玩法，不产生真实扣费');
     renderPanel();
   }));
-  p.querySelector('[data-act="back"]')?.addEventListener('click', () => { panelGame = 'shoot'; renderPanel(); });
+  p.querySelector('[data-act="back"]')?.addEventListener('click', () => {
+    panelGame = rechargeFrom; renderPanel(); updatePlayMenuStates();
+    p.querySelector('[data-act="recharge"]')?.focus({ preventScroll: true });
+  });
 }
 /* 命中确认圈：一圈短促的金弧，跟爆钱飘字互相印证 */
 function drawShotRings(g) {
@@ -13625,61 +13709,75 @@ function hutPanelPlace(p) {
   if (r.right <= west || west - r.width < 16) return;
   p.style.right = ((window.innerWidth - west + 12) / z) + 'px';
 }
-/* 潭心小筑面板：标题行里 4 个小箭头挪面板，位置（相对默认位置的偏移）存在本机。
-   面板每次重画都是整块 innerHTML，所以箭头在 renderHutPanel 末尾重新装一次。
-   每按一下走一步、不做按住连发：桌面壁纸里的鼠标事件是合成的、没有指针捕获，面板一动按钮就离开鼠标，松开收不到。 */
-const HUT_MV_KEY = 'pond-hut-panel-pos-v1', HUT_MV_STEP = 40, HUT_MV_M = 8;
-const HUT_MV = (() => { try { const j = JSON.parse(localStorage.getItem(HUT_MV_KEY) || 'null'); if (j && Number.isFinite(+j.x) && Number.isFinite(+j.y)) return { x: +j.x, y: +j.y }; } catch { } return { x: 0, y: 0 }; })();
-function hutMoverSet(p) { p.style.setProperty('--hut-dx', HUT_MV.x + 'px'); p.style.setProperty('--hut-dy', HUT_MV.y + 'px'); }
-function hutMoverScale(p) {               // 面板带 zoom：1 个 CSS 像素在屏幕上走几像素，实测一次
-  const a = p.getBoundingClientRect().left;
-  p.style.setProperty('--hut-dx', (HUT_MV.x + 100) + 'px');
-  const b = p.getBoundingClientRect().left;
-  p.style.setProperty('--hut-dx', HUT_MV.x + 'px');
-  const k = Math.abs(b - a) / 100; return k > .2 ? k : 1;
+/* 标题栏移动按钮。装修和删除共用位置，潭心小筑沿用原来的存储键。 */
+const PANEL_MOVE_STEP = 40, PANEL_MOVE_MARGIN = 8;
+function loadPanelMover(key) {
+  const pos = loadJSON(key, null);
+  return { key, x: Number.isFinite(pos?.x) ? pos.x : 0, y: Number.isFinite(pos?.y) ? pos.y : 0 };
 }
-function hutMoverClamp(p) {               // 夹回屏幕内（留 8px 边）
-  if (p.hidden) return;
-  const k = hutMoverScale(p), r = p.getBoundingClientRect(), M = HUT_MV_M;
-  let fx = 0, fy = 0;
-  if (r.width > innerWidth - 2 * M || r.left < M) fx = M - r.left; else if (r.right > innerWidth - M) fx = innerWidth - M - r.right;
-  if (r.height > innerHeight - 2 * M || r.top < M) fy = M - r.top; else if (r.bottom > innerHeight - M) fy = innerHeight - M - r.bottom;
-  if (fx || fy) { HUT_MV.x += fx / k; HUT_MV.y += fy / k; hutMoverSet(p); }
+const PLAY_PANEL_MOVERS = {
+  hut: loadPanelMover('pond-hut-panel-pos-v1'),
+  decor: loadPanelMover('pond-decor-panel-pos-v1'),
+};
+function panelMoverSet(p, mover) {
+  p.style.setProperty('--panel-dx', mover.x + 'px');
+  p.style.setProperty('--panel-dy', mover.y + 'px');
 }
-function hutMoverSync(p) {                // 到边的方向变灰
-  const mv = p.querySelector('.hut-mover'); if (!mv || p.hidden) return;
-  const r = p.getBoundingClientRect(), M = HUT_MV_M;
-  const off = { l: r.left <= M + 1, r: r.right >= innerWidth - M - 1, u: r.top <= M + 1, d: r.bottom >= innerHeight - M - 1 };
-  mv.querySelectorAll('button').forEach(b => { b.dataset.off = off[b.dataset.mv] ? '1' : '0'; });
+function panelMoverFit(p, mover) {
+  if (!p.getClientRects().length) return;
+  const { left, top, width, height } = p.getBoundingClientRect();
+  const margin = PANEL_MOVE_MARGIN;
+  const minLeft = margin, maxLeft = Math.max(minLeft, innerWidth - width - margin);
+  const minTop = margin, maxTop = Math.max(minTop, innerHeight - height - margin);
+  const nextLeft = gpClamp(left, minLeft, maxLeft), nextTop = gpClamp(top, minTop, maxTop);
+  const zoom = parseFloat(getComputedStyle(p).zoom) || 1;
+  if (nextLeft !== left || nextTop !== top) {
+    mover.x += (nextLeft - left) / zoom;
+    mover.y += (nextTop - top) / zoom;
+    panelMoverSet(p, mover);
+  }
+  const blocked = { l: nextLeft <= minLeft + 1, r: nextLeft >= maxLeft - 1, u: nextTop <= minTop + 1, d: nextTop >= maxTop - 1 };
+  p.querySelectorAll('.panel-mover button').forEach(b => b.setAttribute('aria-disabled', String(blocked[b.dataset.mv])));
 }
-function hutMoverApply(p) {
-  hutMoverSet(p);
-  requestAnimationFrame(() => { if (panelGame === 'hut') { hutMoverClamp(p); hutMoverSync(p); } });
-}
-function hutMoverMount(p) {
-  const btns = p.querySelector('.pp-head .btns'); if (!btns || btns.querySelector('.hut-mover')) return;
+function panelMoverMount(p, mover) {
+  const btns = p.querySelector('.pp-head .btns');
+  if (!btns || btns.querySelector('.panel-mover')) return;
   const PATH = { l: 'M7.5 2.5 4 6l3.5 3.5', u: 'M2.5 7.5 6 4l3.5 3.5', d: 'M2.5 4.5 6 8l3.5-3.5', r: 'M4.5 2.5 8 6 4.5 9.5' };
   const NAME = { l: '左移', u: '上移', d: '下移', r: '右移' };
   const VEC = { l: [-1, 0], r: [1, 0], u: [0, -1], d: [0, 1] };
   const mv = document.createElement('div');
-  mv.className = 'hut-mover'; mv.setAttribute('role', 'group'); mv.setAttribute('aria-label', '移动面板');
+  mv.className = 'panel-mover'; mv.setAttribute('role', 'group'); mv.setAttribute('aria-label', '移动面板');
   mv.innerHTML = ['l', 'u', 'd', 'r'].map(k => `<button type="button" data-mv="${k}" aria-label="面板${NAME[k]}" title="面板${NAME[k]}"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="${PATH[k]}"/></svg></button>`).join('');
   btns.insertBefore(mv, btns.firstChild);
-  const move = (dx, dy) => {
-    if (p.hidden) return;
-    const k = hutMoverScale(p);
-    HUT_MV.x += dx * HUT_MV_STEP / k; HUT_MV.y += dy * HUT_MV_STEP / k;
-    hutMoverSet(p); hutMoverClamp(p); hutMoverSync(p);
-    try { localStorage.setItem(HUT_MV_KEY, JSON.stringify(HUT_MV)); } catch { }
-  };
   mv.querySelectorAll('button').forEach(b => {
-    const [dx, dy] = VEC[b.dataset.mv]; let lastDown = -1e9;
-    b.addEventListener('pointerdown', e => { if (e.button) return; e.preventDefault(); e.stopPropagation(); lastDown = performance.now(); move(dx, dy); });
-    b.addEventListener('click', e => { e.stopPropagation(); if (e.detail === 0 && performance.now() - lastDown > 700) move(dx, dy); });   // 键盘触发
+    const [dx, dy] = VEC[b.dataset.mv];
+    const move = () => {
+      if (p.hidden || b.getAttribute('aria-disabled') === 'true') return;
+      const zoom = parseFloat(getComputedStyle(p).zoom) || 1;
+      mover.x += dx * PANEL_MOVE_STEP / zoom;
+      mover.y += dy * PANEL_MOVE_STEP / zoom;
+      panelMoverSet(p, mover);
+      panelMoverFit(p, mover);
+      try { localStorage.setItem(mover.key, JSON.stringify({ x: mover.x, y: mover.y })); } catch { }
+    };
+    // 壁纸的合成鼠标事件没有指针捕获，移动后按钮可能已经离开鼠标。
+    let lastDown = -Infinity;
+    b.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault(); e.stopPropagation();
+      lastDown = performance.now();
+      move();
+    });
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      if (e.detail === 0 && performance.now() - lastDown > 700) move();  // 键盘触发
+    });
   });
-  hutMoverSync(p);
 }
-addEventListener('resize', () => { const p = $('gp-panel'); if (p && !p.hidden && panelGame === 'hut') { hutMoverClamp(p); hutMoverSync(p); } });
+addEventListener('resize', () => {
+  const p = $('gp-panel'), mover = PLAY_PANEL_MOVERS[panelGame];
+  if (p && mover) panelMoverFit(p, mover);
+});
 /* 潭心小筑面板：小筑 / 精修 / 居民 / 藏书 / 时令 五个 tab */
 const HUT_TABS = [['hut', '小筑'], ['star', '精修'], ['res', '居民'], ['book', '藏书'], ['time', '时令']];
 const HUT_BOOK_COLORS = ['#7c3a2b', '#41597a', '#6f8a5a', '#8a6a34', '#5d7a8a', '#9a5a3f', '#b08a3a', '#3d4f60'];
@@ -13851,7 +13949,6 @@ function renderHutPanel(p) {
   else body = hutMainTab(lv, nx, out);
   p.innerHTML = panelHead('潭心小筑') + '<div class="pp-body pp-hut">' + tabs + body + '</div>';
   bindPanelCommon(p);
-  hutMoverMount(p);
   p.querySelectorAll('[data-hut-tab]').forEach(b => b.addEventListener('click', () => { HUT.tab = b.dataset.hutTab; HUT.dialog = null; renderPanel(); }));
   p.querySelector('[data-act="build"]')?.addEventListener('click', hutBuild);
   p.querySelector('[data-act="sell"]')?.addEventListener('click', traderSellGoods);
@@ -13888,6 +13985,7 @@ function pointerDown(e) {
      「极简 = 只看不碰」，不必逐个玩法去加判断（漏一个就会漏互动）。 */
   if (zenMode()) return true;
   const x = e.clientX, y = e.clientY;
+  if (decorDeleting) { removeDecorAt(x, y); return true; }
   ac();
   if (BoatFishing.pointerDown(e)) return true;
   if (SHOOT.on) return shootAt(x, y);   // 捕鱼模式：点哪儿打哪儿
@@ -13896,13 +13994,12 @@ function pointerDown(e) {
   if (HIDE.on) return hideGuess(x, y);
   if (COUNT.on || COUNT.phase === 'answer') return true;   // 数鱼期间不让别的事插手
   if (SPOT.on) { spotGuess(x, y); return true; }
+  if (placing) { placeProp(x, y); return true; }
   const seat = fisherAt(x, y); if (seat) { talkFisher(seat); return true; }
   if (tool === 'hand') { pressStart(x, y); return true; }
   if (tool === 'stone') { throwStone(x, y); return true; }
   if (tool === 'coin') { dropCoin(x, y); return true; }
   if (tool === 'lantern') { placeLantern(x, y); return true; }
-  // 摆放中的池塘装修：点哪儿放哪儿
-  if (placing) { placeProp(x, y); return true; }
   // 节日红包鱼：点中就是两枚铜钱
   const pi = packetAt(x, y);
   if (pi >= 0) {
@@ -14920,7 +15017,7 @@ function drawDuckOne(g, d, night, band) {
 function drawScene(g) {
   drawHiddenKoi(g);
   drawShrimps(g, time);
-  drawPropsShore(g, time);
+  drawPropShadows(g, time);
   drawLeadCrown(g, time);
   for (const st of stonesFloor) {
     const yy = st.y - (1 - st.sink) * 16, a = .3 + st.sink * .7;
@@ -14980,6 +15077,7 @@ function drawSpotHint(g) {
 function drawSurface(g, t) {
   drawThemeLayer(g, t);
   drawSeasonDress(g, t);
+  drawPondProps(g, t);
   drawDucks(g, t);
   drawLanterns(g, t);
   drawFlights(g);
@@ -15003,7 +15101,6 @@ function drawSurface(g, t) {
   drawSnowScene(g, t, weatherVisual.snow);
   drawStormFlash(g, t);
   drawMist(g, t);
-  drawPropsWater(g, t);
   drawHut(g, t);
   drawPackets(g, t);
   drawDayEdge(g);
@@ -16349,14 +16446,16 @@ function renderHidePanel(p) {
    ============================================================ */
 
 /* ---------------- 池塘装修：铜钱的消费出口 ---------------- */
-let placing = '';
+let placing = '', decorDeleting = false;
 const propBy = k => GP_PROPS.find(p => p.k === k) || GP_PROPS[0];
 function buyProp(k) {
   const p = propBy(k);
-  if (S.propsOwned[k]) { placing = k; closePanel(); toast('放置' + p.n, '点一片水面或岸边，它就落在那里'); return; }
-  if (!spendCoins(p.cost, `${p.n} —— ${p.d}`)) return;
-  S.propsOwned[k] = true; placing = k; save(); closePanel();
-  toast('解锁了' + p.n, '点一片水面或岸边，把它放下');
+  const owned = !!S.propsOwned[k];
+  if (!owned && !spendCoins(p.cost, `解锁「${p.n}」`)) return;
+  if (!owned) { S.propsOwned[k] = true; save(); }
+  setToolSilently(null);
+  placing = k; closePanel();
+  toast((owned ? '放置' : '解锁了') + p.n, '点一片水面，把它放下');
 }
 function placeProp(x, y) {
   const k = placing; if (!k) return false;
@@ -16372,78 +16471,389 @@ function placeProp(x, y) {
 }
 function clearProps() {
   if (!S.props.length) { toast('池塘还空着', '先去解锁几样摆设'); return; }
-  S.props.length = 0; placing = ''; save();
+  S.props.length = 0; save();
+  setDecorDeleting(false);
   toast('收起了摆设', '解锁记录还在，随时可以重新摆');
-  if (panelGame === 'decor') renderPanel();
 }
+function setDecorDeleting(active) {
+  decorDeleting = active && S.props.length > 0;
+  if (decorDeleting) placing = '';
+  renderPanel();
+  const p = $('gp-panel');
+  p.querySelector(S.props.length ? '[data-act="delete"]' : '[data-act="close"]')?.focus({ preventScroll: true });
+}
+function removeDecorAt(x, y) {
+  const index = decorPropAt(x, y, time);
+  if (index < 0) return;
+  const [removed] = S.props.splice(index, 1);
+  save();
+  setDecorDeleting(true);
+  toast('已删除' + propBy(removed.k).n, '可从池塘装修重新放置');
+}
+addEventListener('keydown', e => {
+  if (e.key === 'Escape' && decorDeleting) setDecorDeleting(false);
+});
 function propScale(p) { return (Math.min(W, H) / 900) * (p.s || 1); }
-/* 岸上摆设：假山 / 石灯笼 / 栈桥 */
-function drawPropsShore(g, t) {
-  /* 极简模式：栈桥等布景一并收起，只留一池水 */
-  if (zenMode()) return;
-  ZENPROBE.props++;
-  for (const p of S.props) {
-    const sc = propScale(p), px = p.x * W, py = p.y * H;
-    if (p.k === 'rock') {
-      g.save(); g.translate(px, py); g.scale(sc, sc);
-      const gr = g.createLinearGradient(0, -34, 0, 26);
-      gr.addColorStop(0, '#8d968a'); gr.addColorStop(1, '#59635d');
-      g.fillStyle = gr;
-      g.beginPath();
-      g.moveTo(-44, 16); g.lineTo(-27, -13); g.lineTo(-6, -31); g.lineTo(15, -17); g.lineTo(35, 4); g.lineTo(29, 20); g.lineTo(-20, 24);
-      g.closePath(); g.fill();
-      g.strokeStyle = 'rgba(38,50,44,.32)'; g.lineWidth = 1.4;
-      g.beginPath(); g.moveTo(-14, -16); g.lineTo(-5, 4); g.lineTo(7, 17); g.moveTo(13, -13); g.lineTo(21, 6); g.stroke();
-      g.restore();
-    } else if (p.k === 'stonelamp') {
-      const night = typeof nightBlend === 'number' ? nightBlend : 0;
-      g.save(); g.translate(px, py); g.scale(sc, sc);
-      g.fillStyle = '#7c8478'; g.fillRect(-8, -4, 16, 28);
-      g.beginPath(); g.moveTo(-15, -4); g.lineTo(15, -4); g.lineTo(10, -16); g.lineTo(-10, -16); g.closePath(); g.fill();
-      g.fillStyle = '#5d6559';
-      g.beginPath(); g.moveTo(-19, -16); g.lineTo(19, -16); g.lineTo(11, -25); g.lineTo(-11, -25); g.closePath(); g.fill();
-      g.fillStyle = `rgba(255,226,160,${.3 + .55 * night})`; g.fillRect(-7, -13, 14, 8);
-      if (night > .15) {
-        const gl = g.createRadialGradient(0, -9, 3, 0, -9, 66);
-        gl.addColorStop(0, `rgba(255,214,140,${.42 * night})`);
-        gl.addColorStop(1, 'rgba(255,214,140,0)');
-        g.fillStyle = gl; g.beginPath(); g.arc(0, -9, 66, 0, TAU); g.fill();
+/* 五种摆件共用固定锚点，换风格时复用存档中的坐标、比例和所有权。 */
+const DECOR_SPRITE = { w: 224, h: 158, x: 112, y: 106, scale: 2 };
+const decorSprites = new Map();
+const decorThumbnails = new Map();
+const DECOR_PALETTES = {
+  stone: {
+    stone: ['#a6ac8d', '#747f70', '#41584e', '#223d37'],
+    moss: ['#435c3d', '#6d8250', '#92a265'],
+    leaves: ['#859c5b', '#4a7948', '#254e3f'],
+    petal: ['#fff7d8', '#f1e5b9', '#9a9e6c'],
+    water: ['#839e7b', '#3a766f'],
+  },
+  bamboo: {
+    stone: ['#9ea996', '#627c75', '#405e61', '#213b42'],
+    moss: ['#364e44', '#618778', '#86a595'],
+    leaves: ['#638f75', '#386d59', '#204e49'],
+    petal: ['#edf4d2', '#bdd6b0', '#709b7b'],
+    water: ['#9bad98', '#3d7473'],
+  },
+  vermilion: {
+    stone: ['#ada383', '#7d7868', '#544e48', '#362f32'],
+    moss: ['#4f5241', '#7d7950', '#a4965d'],
+    leaves: ['#8c9155', '#546941', '#354942'],
+    petal: ['#ffe1c5', '#df9387', '#a74e63'],
+    water: ['#9d9c78', '#4f7470'],
+  },
+};
+function decorGradient(g, x1, y1, x2, y2, colors) {
+  const gradient = g.createLinearGradient(x1, y1, x2, y2);
+  colors.forEach((color, i) => gradient.addColorStop(i / (colors.length - 1), color));
+  return gradient;
+}
+function decorPath(g, path, fill) {
+  g.fillStyle = fill;
+  g.fill(new Path2D(path));
+}
+function decorEllipse(g, x, y, rx, ry, fill, angle = 0) {
+  g.fillStyle = fill;
+  g.beginPath(); g.ellipse(x, y, rx, ry, angle, 0, TAU); g.fill();
+}
+function decorStone(g, x, y, w, h, angle, palette, seed) {
+  const random = koiSeedRandom(seed);
+  const [top, mid, shade, deep] = palette.stone;
+  g.save(); g.translate(x, y); g.rotate(angle); g.scale(w / 80, h / 48);
+  const outline = new Path2D('M-41 9 Q-39 1 -31 -9 L-20 -20 Q-12 -25 6 -24 L24 -20 Q34 -17 42 2 L38 14 Q34 21 20 24 L-21 24 Q-37 22 -41 9Z');
+  g.fillStyle = decorGradient(g, -20, -25, 15, 26, [top, mid, deep]); g.fill(outline);
+  g.clip(outline);
+  decorPath(g, 'M-44 6 -31-10 -1-22 17-12 6 0 -18 10 -37 12Z', decorGradient(g, -30, -24, 8, 10, [top, mid]));
+  decorPath(g, 'M16-13 28-16 43 1 39 14 22 21 6 8 7 0Z', decorGradient(g, 4, -5, 36, 21, [shade, deep]));
+  decorPath(g, 'M-41 10 -18 11 7 1 10 7 1 17 -30 25Z', shade);
+  g.strokeStyle = top + '70'; g.lineWidth = 1.3;
+  g.stroke(new Path2D('M-32 0 -21-10 -4-15 M-20 14 -5 11 4 5 M12-19 23-14 27-9'));
+  for (let i = 0; i < 152; i++) {
+    const xx = random() * 84 - 42, yy = random() * 50 - 25;
+    decorEllipse(g, xx, yy, .25 + random() * 1.4, .28 + random() * .62, i % 3 ? '#f5ead52d' : '#172c2854', -.25);
+  }
+  for (let i = 0; i < 40; i++) {
+    const spot = i % 2;
+    const xx = (spot ? -24 : 23) + (random() - .5) * 25, yy = (spot ? -9 : -16) + (random() - .5) * 11;
+    decorEllipse(g, xx, yy, .5 + random() * 3.3, .3 + random() * 1.45, palette.moss[i % 3] + 'ac', -.15);
+  }
+  g.restore();
+}
+function decorRock(g, palette, id) {
+  if (id === 'bamboo') {
+    decorStone(g, 14, -15, 54, 92, .5, palette, 27);
+    decorStone(g, -13, -10, 59, 68, -.35, palette, 32);
+    decorStone(g, 12, 14, 85, 35, -.14, palette, 47);
+  } else if (id === 'vermilion') {
+    decorStone(g, -9, -20, 85, 67, -.20, palette, 52);
+    decorStone(g, 26, 8, 54, 45, .25, palette, 91);
+    decorStone(g, -32, 12, 42, 29, -.11, palette, 74);
+  } else {
+    decorStone(g, -12, -12, 94, 72, -.27, palette, 41);
+    decorStone(g, 34, 6, 54, 41, .17, palette, 63);
+    decorStone(g, -36, 18, 35, 23, .1, palette, 98);
+  }
+}
+function decorBridge(g, palette, id) {
+  if (id === 'stone') {
+    const steps = [[35,-38,30,20,-.31], [17,-20,35,21,.18], [-12,-5,41,24,-.19],
+      [-30,14,45,25,.22], [-53,35,37,21,-.25]];
+    steps.forEach(([x, y, w, h, r], i) => decorStone(g, x, y, w, h, r, palette, 79 + i * 35));
+    return;
+  }
+  g.save(); g.rotate(id === 'bamboo' ? -.49 : -.12);
+  if (id === 'bamboo') {
+    // 两根纵梁承住劈竹桥面，扎绳压住两侧竹节。
+    const bamboo = decorGradient(g, 0, -23, 0, 33, ['#b9ad78', '#7e8654', '#425b43']);
+    const random = koiSeedRandom(471);
+    for (const y of [-23, 14]) {
+      decorPath(g, 'M-74 ' + y + ' q72 -6 150 1 l-2 9 q-80 -5 -149 -1Z', '#364d39');
+    }
+    for (let i = 0; i < 15; i++) {
+      const x = -64 + i * 9, end = 22 + random() * 5;
+      g.lineCap = 'round'; g.lineWidth = 8; g.strokeStyle = bamboo;
+      g.beginPath(); g.moveTo(x, -21 - random() * 5); g.lineTo(x + 4, end); g.stroke();
+      g.strokeStyle = '#efe2a052'; g.lineWidth = 1;
+      g.beginPath(); g.moveTo(x - 2, -20); g.lineTo(x + 2, end - 2); g.stroke();
+      decorEllipse(g, x + 4, end, 3.6, 2.3, '#a39460');
+      const knot = -14 + (i % 4) * 9;
+      decorPath(g, 'M' + (x - 3) + ' ' + knot + ' l8 .6 v1.5 l-8 -.6Z', '#4d5c3d9c');
+    }
+    for (const y of [-18, 20]) {
+      g.strokeStyle = '#443e2c'; g.lineWidth = 2.2;
+      g.stroke(new Path2D('M-69 ' + y + ' Q0 ' + (y - 4) + ' 69 ' + y));
+      for (let x = -58; x < 69; x += 17) {
+        g.strokeStyle = '#d4c495b0'; g.lineWidth = 1.55;
+        g.stroke(new Path2D('M' + x + ' ' + (y - 3) + ' l4 6 m-1 -6 l4 5'));
       }
+    }
+    g.restore(); return;
+  }
+
+  // 拱形桥面与前后栏杆各有一条曲线，露出木板的透视和下方水面。
+  decorPath(g, 'M-77 22 Q-6-36 76 15 L73 29 Q-3-13 -73 36Z',
+    decorGradient(g, 0, -18, 0, 34, ['#ba775d', '#7d4c3c', '#4a3731']));
+  decorPath(g, 'M-77 22 -72 3 Q-4-49 74-4 L76 15 Q-6-36 -77 22Z',
+    decorGradient(g, -48, -27, 27, 28, ['#dbc094', '#af8260', '#794537']));
+  for (let i = 1; i < 18; i++) {
+    const u = i / 18, x = -75 + 150 * u;
+    const y = 11 - 31 * Math.sin(u * Math.PI) - 7 * u;
+    g.strokeStyle = i % 3 ? '#543d316d' : '#fff1be75'; g.lineWidth = .9;
+    g.beginPath(); g.moveTo(x + 1, y - 5); g.lineTo(x - 2, y + 13); g.stroke();
+  }
+  for (const near of [false, true]) {
+    const offset = near ? 17 : -3, rail = near ? '#a34f3e' : '#773e39';
+    g.lineCap = 'round';
+    for (let i = 0; i <= 6; i++) {
+      const u = i / 6, x = -73 + u * 146, y = 5 - 25 * Math.sin(u * Math.PI) - 6 * u + offset;
+      g.strokeStyle = '#563732'; g.lineWidth = 4.8;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x, y - 18); g.stroke();
+      g.strokeStyle = near ? '#c4795e' : '#a35847'; g.lineWidth = 1.25;
+      g.beginPath(); g.moveTo(x - 1.4, y - 2); g.lineTo(x - 1.4, y - 18); g.stroke();
+      decorEllipse(g, x, y - 18.5, 3.7, 2.4, '#d69f71');
+    }
+    g.save(); g.translate(0, offset);
+    g.strokeStyle = rail; g.lineWidth = 4;
+    g.stroke(new Path2D('M-74-11 Q-5-59 74-17 M-74-3 Q-5-51 74-9'));
+    g.strokeStyle = near ? '#eaa17a' : '#be7d61'; g.lineWidth = 1.15;
+    g.stroke(new Path2D('M-74-12 Q-5-60 74-18'));
+    g.restore();
+  }
+  g.restore();
+}
+function decorLamp(g, palette, id) {
+  const [light, mid, shade, deep] = palette.stone;
+  const rounded = id === 'stone', warm = id === 'vermilion';
+  decorStone(g, 0, 6, 45, 17, -.1, palette, 64);
+  decorPath(g, 'M-14 2 -9-6 -6-12 -5-40 6-40 7-12 11-5 15 2 5 6 -9 5Z',
+    decorGradient(g, -12, -20, 13, -18, [light, mid, deep]));
+  decorPath(g, 'M-19-30 -13-37 14-37 19-32 13-26 -14-26Z', shade);
+  decorPath(g, 'M-13-51 12-52 17-34 9-30 -14-33Z',
+    decorGradient(g, -13, -46, 15, -39, [mid, shade, deep]));
+  decorPath(g, 'M-9-48 2-49 2-35 -8-36Z',
+    decorGradient(g, -9, -48, 2, -35, warm ? ['#ffe0a1', '#ba7751'] : ['#d8cea0', '#938a63']));
+  decorPath(g, 'M6-47 11-48 13-36 6-35Z', warm ? '#dc9256' : '#827e5f');
+  if (rounded) {
+    decorPath(g, 'M-26-50 Q-15-54 -10-63 Q-4-70 3-69 Q13-61 31-52 L23-48 Q0-46 -26-50Z',
+      decorGradient(g, -16, -67, 12, -46, [light, mid, deep]));
+    decorEllipse(g, 0, -67, 4, 4.2, mid);
+  } else {
+    for (let i = 0; i < (warm ? 1 : 2); i++) {
+      g.save(); g.translate(0, -i * 11); g.scale(1 - i * .22, 1);
+      decorPath(g, 'M-29-49 Q-15-52 -8-64 L0-68 9-64 Q17-53 29-51 L19-46 -6-47Z',
+        decorGradient(g, -19, -63, 21, -49, warm ? ['#b88d64', '#85604d', deep] : [light, mid, deep]));
+      g.strokeStyle = light + '91'; g.lineWidth = 1.1;
+      g.stroke(new Path2D('M-26-49 Q-9-53 0-67 M0-66 Q7-53 20-48'));
       g.restore();
-    } else if (p.k === 'bridge') {
-      g.save(); g.translate(px, py); g.scale(sc, sc);
-      g.strokeStyle = 'rgba(58,42,30,.45)'; g.lineWidth = 5;
-      for (let i = 0; i < 5; i++) { g.beginPath(); g.moveTo(-26 + i * 3, 8 + i * 12); g.lineTo(30 - i * 2, 14 + i * 12); g.stroke(); }
-      g.fillStyle = '#8a6a48';
-      for (let i = 0; i < 5; i++) { g.save(); g.translate(0, i * 12); g.fillRect(-34 + i * 2, -4, 76 - i * 3, 9); g.restore(); }
+    }
+    decorEllipse(g, 0, warm ? -68 : -80, 3.4, 4.9, warm ? '#c99b62' : mid);
+  }
+}
+function decorGrass(g, id) {
+  const random = koiSeedRandom(124);
+  const bamboo = id === 'bamboo', warm = id === 'vermilion';
+  const stems = bamboo ? [-18, -6, 8, 21] : [-24, -18, -11, -4, 4, 10, 18, 23, 29];
+  for (let i = 0; i < stems.length; i++) {
+    const x = stems[i], bend = x * .7 + random() * 12 - 6;
+    const h = (bamboo ? 37 : 21) + random() * 30;
+    const end = x + bend;
+    const green = bamboo ? '#46664b' : warm ? '#7e7743' : '#43674a';
+    g.lineCap = 'round'; g.strokeStyle = green; g.lineWidth = bamboo ? 3.2 : 1.5;
+    g.beginPath(); g.moveTo(x * .58, 9); g.quadraticCurveTo(x, -h * .48, end, -h); g.stroke();
+    for (let j = 0; j < (bamboo ? 5 : 2); j++) {
+      const f = .37 + j * (bamboo ? .13 : .27), y = -h * f;
+      const sx = x * .58 + (end - x * .58) * f, side = (j + i) % 2 ? -1 : 1;
+      g.save(); g.translate(sx, y); g.scale(side, 1);
+      decorPath(g, bamboo ? 'M0 0 Q11-14 28-15 Q18-1 0 0Z' : 'M0 2 Q8-20 23-28 Q15-9 0 2Z',
+        decorGradient(g, 0, 0, 22, -19, [green, warm ? '#aca369' : (bamboo ? '#759e72' : '#839c55')]));
       g.restore();
+      if (bamboo) decorEllipse(g, sx, y, 2.1, .85, '#b3ba86');
+    }
+    if (!bamboo && i % 2 === 0) {
+      if (warm) {
+        for (let j = 0; j < 12; j++) {
+          const yy = -h - j * 1.3;
+          decorEllipse(g, end + (random() - .5) * 8 * (1 - j / 15), yy, 2.4, .85, '#e4ce9ea6', -.55);
+        }
+      } else {
+        decorEllipse(g, end, -h - 4, 2.6, 7.5, '#886348', bend * .017);
+        decorEllipse(g, end - .8, -h - 5, .65, 5.5, '#bc9267', bend * .017);
+      }
     }
   }
 }
-/* 水上摆设：睡莲 / 水草（随水波轻晃） */
-function drawPropsWater(g, t) {
-  for (const p of S.props) {
-    const sc = propScale(p), px = p.x * W, py = p.y * H;
-    if (p.k === 'lilypad') {
-      const bob = Math.sin(t * .0011 + p.r) * 2.4;
-      g.save(); g.translate(px, py + bob); g.scale(sc, sc); g.rotate(p.r * .35);
-      g.fillStyle = '#4e7a4a';
-      g.beginPath(); g.arc(0, 0, 26, .42, TAU - .42); g.lineTo(0, 0); g.closePath(); g.fill();
-      g.strokeStyle = 'rgba(28,58,34,.32)'; g.lineWidth = 1;
-      for (let i = 0; i < 6; i++) { const a = .5 + i * (TAU - 1) / 6; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 22, Math.sin(a) * 22); g.stroke(); }
-      g.restore();
-    } else if (p.k === 'grass') {
-      g.save();
-      g.lineCap = 'round';
-      for (let i = 0; i < 7; i++) {
-        const x = px + (i - 3) * 5.5 * sc, sway = Math.sin(t * .0012 + i + p.r) * 5 * sc;
-        g.strokeStyle = `rgba(74,110,64,${.5 + .22 * (i % 2)})`; g.lineWidth = 2.3 * sc;
-        g.beginPath(); g.moveTo(x, py + 4 * sc);
-        g.quadraticCurveTo(x + sway, py - 15 * sc, x + sway * 2.1, py - 33 * sc * (p.s || 1));
-        g.stroke();
-      }
+function decorLily(g, palette, id) {
+  const pads = id === 'bamboo' ? [[-21,6,23,18,.60], [14,-8,23,16,-.41], [32,12,13,10,.4]]
+    : [[-16,8,25,20,2.1], [16,-6,29,23,-.45], [32,17,13,10,.65]];
+  const random = koiSeedRandom(881);
+  for (const [x, y, rx, ry, angle] of pads) {
+    g.save(); g.translate(x, y); g.rotate(angle); g.scale(rx, ry);
+    const shape = new Path2D('M0 .02 L.93-.36 C.61-1.23 -.47-1.25 -.88-.53 C-1.25 .16 -.83 .95 -.20 1 C.44 1.15 1.06 .62 1.01 .17Z');
+    g.fillStyle = decorGradient(g, -.8, -.8, .66, .8, palette.leaves); g.fill(shape);
+    g.save(); g.clip(shape);
+    g.strokeStyle = '#d3df976b'; g.lineWidth = .014;
+    for (let j = 0; j < 11; j++) {
+      const a = .14 + j * .525, cos = Math.cos(a), sin = Math.sin(a);
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(cos * .55 - .10, sin * .54, cos, sin); g.stroke();
+    }
+    for (let j = 0; j < 94; j++) {
+      decorEllipse(g, random() * 2 - 1, random() * 2 - 1, .012 + random() * .031, .016, j % 3 ? '#e3e8a52b' : '#1b4d3651');
+    }
+    g.restore();
+    g.strokeStyle = '#e5e6ad6b'; g.lineWidth = .019; g.stroke(shape);
+    decorEllipse(g, -.40, -.27, .063, .045, '#d6e5c28e', -.4);
+    g.restore();
+  }
+  const warm = id === 'vermilion', bud = id === 'bamboo';
+  const size = warm ? 17 : bud ? 10 : 13;
+  g.save(); g.translate(warm ? 9 : 8, warm ? -11 : -10); g.scale(size, size * (bud ? .88 : .78));
+  decorEllipse(g, .13, .24, 1.06, .78, '#29473665');
+  for (const ring of [0, 1]) {
+    const count = ring ? 7 : 9;
+    for (let i = 0; i < count; i++) {
+      g.save(); g.rotate((i + ring * .51) * TAU / count); g.scale(1 - ring * .30, 1 - ring * .30);
+      decorPath(g, 'M0 .11 Q-.57-.24 -.45-.71 Q-.36-.97 .03-1.24 Q.47-.91 .49-.60 Q.50-.21 0 .11Z',
+        decorGradient(g, 0, .12, -.09, -1.12, [palette.petal[2], palette.petal[1], palette.petal[0]]));
       g.restore();
     }
+  }
+  decorEllipse(g, 0, 0, .30, .24, '#cda957');
+  for (let i = 0; i < 12; i++) {
+    const a = i * 2.4, r = Math.sqrt(i / 11) * .25;
+    decorEllipse(g, Math.cos(a) * r, Math.sin(a) * r * .78, .044, .044, i % 2 ? '#f4d17a' : '#8e7039');
+  }
+  g.restore();
+}
+const DECOR_PAINTERS = {
+  rock: decorRock, bridge: decorBridge, stonelamp: decorLamp,
+  grass: (g, palette, id) => decorGrass(g, id), lilypad: decorLily,
+};
+function decorSprite(id, kind) {
+  const key = id + '/' + kind;
+  if (decorSprites.has(key)) return decorSprites.get(key);
+  const { w, h, x, y, scale } = DECOR_SPRITE;
+  const canvas = document.createElement('canvas');
+  canvas.width = w * scale; canvas.height = h * scale;
+  const g = canvas.getContext('2d');
+  g.setTransform(scale, 0, 0, scale, x * scale, y * scale);
+  DECOR_PAINTERS[kind](g, DECOR_PALETTES[id], id);
+  const sprite = { canvas, pixels: null };
+  decorSprites.set(key, sprite);
+  return sprite;
+}
+function decorPose(p, t) {
+  const phase = p.r || 0;
+  const lily = p.k === 'lilypad', grass = p.k === 'grass';
+  const wind = weatherVisual.wind || 0;
+  const bob = lily ? Math.sin(t * .0014 + phase) * 1.7 : 0;
+  const turn = lily ? Math.sin(phase) * .48 : Math.sin(phase) * .09;
+  const sway = (lily || grass) ? Math.sin(t * .0018 + phase) * (.025 + .055 * wind) : 0;
+  return { x: p.x * W, y: p.y * H + bob, scale: propScale(p), angle: turn + sway };
+}
+function paintDecorObject(g, sprite, pose, opacity = 1, verticalScale = 1) {
+  const { x, y, w, h } = DECOR_SPRITE;
+  g.save(); g.translate(pose.x, pose.y); g.rotate(pose.angle); g.scale(pose.scale, pose.scale * verticalScale);
+  g.globalAlpha *= opacity;
+  g.drawImage(sprite.canvas, -x, -y, w, h);
+  g.restore();
+}
+const DECOR_SHADOW_WIDTHS = { bridge: 87, rock: 65, stonelamp: 32, grass: 38, lilypad: 58 };
+function drawPropShadow(g, p, pose) {
+  const width = DECOR_SHADOW_WIDTHS[p.k];
+  g.save(); g.translate(pose.x + 3 * pose.scale, pose.y + 9 * pose.scale);
+  g.rotate(pose.angle); g.scale(width * pose.scale, width * .32 * pose.scale);
+  const shade = g.createRadialGradient(0, 0, 0, 0, 0, 1);
+  shade.addColorStop(0, '#102e2a70'); shade.addColorStop(.55, '#163a3454'); shade.addColorStop(1, '#163a3400');
+  g.fillStyle = shade; g.fillRect(-1, -1, 2, 2); g.restore();
+}
+function drawPropShadows(g, t) {
+  if (zenMode()) return;
+  ZENPROBE.props++;
+  for (const p of S.props) if (DECOR_PAINTERS[p.k]) drawPropShadow(g, p, decorPose(p, t));
+}
+function drawPondProps(g, t) {
+  if (zenMode() || !S.props.length) return;
+  const selected = decorDeleting && pointer.active ? decorPropAt(pointer.x, pointer.y, t) : -1;
+  const opacity = 1 - nightBlend * .32;
+  S.props.forEach((p, i) => {
+    if (!DECOR_PAINTERS[p.k]) return;
+    const pose = decorPose(p, t);
+    const sprite = decorSprite(S.decorStyle, p.k);
+    if (p.k === 'stonelamp') {
+      const power = Math.max(0, nightBlend - .08);
+      if (power > 0) {
+        g.save(); g.translate(pose.x, pose.y - 37 * pose.scale); g.scale(pose.scale, pose.scale);
+        const light = g.createRadialGradient(0, 0, 2, 0, 0, 60);
+        light.addColorStop(0, 'rgba(255,198,105,' + (.6 * power) + ')');
+        light.addColorStop(.37, 'rgba(247,175,92,' + (.21 * power) + ')');
+        light.addColorStop(1, 'rgba(247,175,92,0)');
+        g.fillStyle = light; g.fillRect(-60, -60, 120, 120); g.restore();
+      }
+      paintDecorObject(g, sprite, { ...pose, y: pose.y + 10 * pose.scale }, .11 + .045 * power, -.31);
+    }
+    if (i === selected) {
+      g.save();
+      g.shadowColor = '#ffddb0'; g.shadowBlur = 9 * pose.scale;
+      paintDecorObject(g, sprite, pose);
+      g.restore();
+    } else {
+      paintDecorObject(g, sprite, pose, opacity);
+    }
+  });
+}
+/* 像素命中跟随渲染姿态，重叠时优先选中画在最上面的一件。 */
+function decorPropAt(x, y, t) {
+  const { x: anchorX, y: anchorY, scale } = DECOR_SPRITE;
+  for (let i = S.props.length - 1; i >= 0; i--) {
+    const p = S.props[i];
+    if (!DECOR_PAINTERS[p.k]) continue;
+    const pose = decorPose(p, t);
+    const dx = (x - pose.x) / pose.scale, dy = (y - pose.y) / pose.scale;
+    const cos = Math.cos(pose.angle), sin = Math.sin(pose.angle);
+    const sx = Math.round((anchorX + dx * cos + dy * sin) * scale);
+    const sy = Math.round((anchorY - dx * sin + dy * cos) * scale);
+    const sprite = decorSprite(S.decorStyle, p.k), { width, height } = sprite.canvas;
+    if (sx < 2 || sx >= width - 2 || sy < 2 || sy >= height - 2) continue;
+    sprite.pixels ??= sprite.canvas.getContext('2d').getImageData(0, 0, width, height).data;
+    for (const [ox, oy] of [[0, 0], [-2, 0], [2, 0], [0, -2], [0, 2]]) {
+      if (sprite.pixels[((sy + oy) * width + sx + ox) * 4 + 3] > 80) return i;
+    }
+  }
+  return -1;
+}
+function drawDecorThumbnail(canvas, id) {
+  const g = canvas.getContext('2d'), { width: w, height: h } = canvas;
+  if (!decorThumbnails.has(id)) {
+    const palette = DECOR_PALETTES[id], random = koiSeedRandom(547);
+    g.fillStyle = decorGradient(g, 0, 0, w, h, palette.water); g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 140; i++) {
+      decorEllipse(g, random() * w, random() * h, 4 + random() * 12, .5 + random() * 3, i % 3 ? '#d7e4b93d' : '#264b4935', -.2);
+    }
+    const props = [['rock', 39, 42, .59, 0], ['grass', 142, 36, .54, .02],
+      ['bridge', 86, 57, .75, 0], ['stonelamp', 142, 73, .62, .03], ['lilypad', 43, 80, .62, -.27]];
+    for (const [k, x, y, scale, angle] of props) drawPropShadow(g, { k }, { x, y, scale, angle });
+    for (const [k, x, y, scale, angle] of props) paintDecorObject(g, decorSprite(id, k), { x, y, scale, angle });
+    decorThumbnails.set(id, g.getImageData(0, 0, w, h));
+  } else {
+    g.putImageData(decorThumbnails.get(id), 0, 0);
   }
 }
 
@@ -24646,8 +25056,27 @@ function ffSaveParse(text) {
 
 /* Desktop hosts may forward clicks through JS. Detect the available local
    file bridge by its authenticated health response, independently of the host. */
-// Public web build: desktop bridge credentials stay in the local installation.
-const FF_DESKTOP_SAVE_BRIDGE = { port: 0, token: '' };
+// 仅在本机文件模式读取安装目录内的存档助手配置。
+let ffDesktopBridgeConfig;
+function ffLoadDesktopBridgeConfig() {
+  if (location.protocol !== 'file:') return Promise.resolve(null);
+  ffDesktopBridgeConfig ??= new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = './.pond-local/save-bridge.js';
+    script.onload = () => {
+      const config = window.PondLocalSaveBridge;
+      delete window.PondLocalSaveBridge;
+      script.remove();
+      resolve(config);
+    };
+    script.onerror = () => {
+      script.remove();
+      resolve(null);
+    };
+    document.head.append(script);
+  });
+  return ffDesktopBridgeConfig;
+}
 let FF_USES_DESKTOP_SAVE = location.protocol === 'file:' && !!window.__wxMouseBridge;
 let ffDesktopSaveDetection = null;
 function ffSaveDetectDesktop(force = false) {
@@ -24665,15 +25094,17 @@ function ffSaveDetectDesktop(force = false) {
   return ffDesktopSaveDetection;
 }
 async function ffSaveDesktop(action, payload) {
+  const config = await ffLoadDesktopBridgeConfig();
+  if (!config?.port || !config.token) throw new Error('本机存档助手未配置，请先启动「荷塘存档助手」再重试。');
   const abort = new AbortController();
   const timer = setTimeout(() => abort.abort(), action === 'health' ? 2500 : action === 'import' ? 600000 : 15000);
   let response;
   try {
-    response = await fetch('http://127.0.0.1:' + FF_DESKTOP_SAVE_BRIDGE.port + '/v1/' + action, {
+    response = await fetch('http://127.0.0.1:' + config.port + '/v1/' + action, {
       method: action === 'health' ? 'GET' : 'POST',
       headers: action === 'health'
-        ? { 'Authorization': 'Bearer ' + FF_DESKTOP_SAVE_BRIDGE.token }
-        : { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FF_DESKTOP_SAVE_BRIDGE.token },
+        ? { 'Authorization': 'Bearer ' + config.token }
+        : { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + config.token },
       body: action === 'health' ? undefined : JSON.stringify(payload || {}),
       signal: abort.signal
     });
